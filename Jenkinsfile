@@ -48,6 +48,17 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy on cluster'){
+            steps{
+                withCredentials([file(credentialsId:'kubeconfig-jenkins', variable:'KUBECONFIGFILE')]){
+                    sh '''
+                        kubectl apply -f k8/deployment.yaml
+                        kubectl apply -f k8/service.yaml
+                    '''
+                }
+            }
+        }
     }
 
     post {

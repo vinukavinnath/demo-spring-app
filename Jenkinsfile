@@ -51,7 +51,7 @@ pipeline {
         stage('Deploy on cluster'){
             steps{
                 withCredentials([file(credentialsId:'kubeconfig-jenkins', variable:'KUBECONFIGFILE')]){
-                    sh '''
+                    sh """
                         cp k8/deployment.yaml deployment-temp.yaml
                         sed -i 's|IMAGE_TAG_PLACEHOLDER|${VERSION_TAG}|' deployment-temp.yaml
 
@@ -59,7 +59,8 @@ pipeline {
                         kubectl apply -f k8/service.yaml
 
                         rm deployment-temp.yaml
-                    '''
+                    """
+
                 }
             }
         }

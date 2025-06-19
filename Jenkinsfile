@@ -24,12 +24,10 @@ pipeline {
             steps {
                 script {
                     def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    env.LATEST_TAG = "latest"
                     env.VERSION_TAG = "v${commitHash}"
 
                     sh """
                         docker build -t ${IMAGE_NAME}:${VERSION_TAG} .
-                        docker tag ${IMAGE_NAME}:${VERSION_TAG} ${IMAGE_NAME}:${LATEST_TAG}
                     """
                 }
             }
@@ -45,7 +43,6 @@ pipeline {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push ${IMAGE_NAME}:${VERSION_TAG}
-                        docker push ${IMAGE_NAME}:${LATEST_TAG}
                     '''
                 }
             }
@@ -55,8 +52,13 @@ pipeline {
             steps{
                 withCredentials([file(credentialsId:'kubeconfig-jenkins', variable:'KUBECONFIGFILE')]){
                     sh '''
+                        cp k8/deployment.yaml deployment-temp.yaml
+                        sed -i 's|IMAGE_TAG_PLACEHOLDER|${VERSION_TAG}|' deployment-temp.yaml
+
                         kubectl apply -f k8/deployment.yaml
                         kubectl apply -f k8/service.yaml
+
+                        rm deployment-temp.yaml
                     '''
                 }
             }

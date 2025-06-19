@@ -10,7 +10,7 @@ spec:
     spec:
       containers:
         - name: hello-sb-app
-          image: vinukavinnath/hellospringboot:latest
+          image: vinukavinnath/hellospringboot:IMAGE_TAG_PLACEHOLDER
           imagePullPolicy: Always
           ports:
             - containerPort: 9090

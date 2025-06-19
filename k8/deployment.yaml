@@ -11,10 +11,11 @@ spec:
       containers:
         - name: hello-sb-app
           image: vinukavinnath/hellospringboot:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 9090
   selector:
     matchLabels:
       app: hellospringboot-app
-  replicas: 3
+  replicas: 2
 

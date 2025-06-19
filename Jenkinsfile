@@ -7,6 +7,7 @@ pipeline {
     }
 
     stages {
+//     No need of this checkout stage as in the Jenkins server we are defining the git repo and credentials
 //         stage('Checkout') {
 //             steps {
 //                 git branch: 'main', url: 'https://github.com/vinukavinnath/demo-spring-app.git'

@@ -24,13 +24,12 @@ pipeline {
             steps {
                 script {
                     def commitHash = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
-                    def versionTag = "v${commitHash}"
-                    def latestTag = "latest"
-                    env.VERSION_TAG = versionTag
+                    env.LATEST_TAG = "latest"
+                    env.VERSION_TAG = "v${commitHash}"
 
                     sh """
-                        docker build -t ${IMAGE_NAME}:${versionTag} .
-                        docker tag ${IMAGE_NAME}:${versionTag} ${IMAGE_NAME}:${latestTag}
+                        docker build -t ${IMAGE_NAME}:${VERSION_TAG} .
+                        docker tag ${IMAGE_NAME}:${VERSION_TAG} ${IMAGE_NAME}:${LATEST_TAG}
                     """
                 }
             }
@@ -46,7 +45,7 @@ pipeline {
                     sh '''
                         echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
                         docker push ${IMAGE_NAME}:${VERSION_TAG}
-                        docker push ${IMAGE_NAME}:${latestTag}
+                        docker push ${IMAGE_NAME}:${LATEST_TAG}
                     '''
                 }
             }

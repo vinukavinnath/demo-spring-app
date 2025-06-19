@@ -55,7 +55,7 @@ pipeline {
                         cp k8/deployment.yaml deployment-temp.yaml
                         sed -i 's|IMAGE_TAG_PLACEHOLDER|${VERSION_TAG}|' deployment-temp.yaml
 
-                        kubectl apply -f k8/deployment.yaml
+                        kubectl apply -f k8/deployment-temp.yaml
                         kubectl apply -f k8/service.yaml
 
                         rm deployment-temp.yaml
@@ -67,7 +67,7 @@ pipeline {
 
     post {
         success {
-            echo "Docker image pushed successfully: ${IMAGE_NAME}:${VERSION_TAG}"
+            echo "Workflow Completed with ${IMAGE_NAME}:${VERSION_TAG}"
         }
         failure {
             echo "Pipeline failed!"

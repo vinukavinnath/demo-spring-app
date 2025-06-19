@@ -7,11 +7,11 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                git branch: 'main', url: 'https://github.com/vinukavinnath/demo-spring-app.git'
-            }
-        }
+//         stage('Checkout') {
+//             steps {
+//                 git branch: 'main', url: 'https://github.com/vinukavinnath/demo-spring-app.git'
+//             }
+//         }
 
         stage('Build JAR') {
             steps {

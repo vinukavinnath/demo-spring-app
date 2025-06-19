@@ -8,6 +8,6 @@ public class HelloController {
 
     @GetMapping("/")
     public String sayHello() {
-        return "Hello world!";
+        return "SCM Polling enabled!";
     }
 }

@@ -8,6 +8,6 @@ public class HelloController {
 
     @GetMapping("/")
     public String sayHello() {
-        return "Test Commit 01";
+        return "Testing the Kubernetes Deployment 01";
     }
 }

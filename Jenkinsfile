@@ -48,6 +48,14 @@ pipeline {
             }
         }
 
+        stage('Delete the pushed Image from local Jenkins Server'){
+            steps{
+                sh '''
+                    docker rmi ${IMAGE_NAME}:${VERSION_TAG}
+                '''
+            }
+        }
+
         stage('Deploy on cluster'){
             steps{
                 withCredentials([file(credentialsId:'kubeconfig-jenkins', variable:'KUBECONFIGFILE')]){

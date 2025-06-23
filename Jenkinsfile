@@ -33,6 +33,20 @@ pipeline {
             }
         }
 
+        stage('Vulnerability Scan') {
+                    steps {
+                        script {
+                            def imageNameWithTag = "${IMAGE_NAME}:${VERSION_TAG}"
+
+                            sh """
+                                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest \
+                                image --exit-code 1 --severity HIGH,CRITICAL ${imageNameWithTag}
+                            """
+                        }
+                    }
+                }
+
+
         stage('Push Docker Image') {
             steps {
                 withCredentials([usernamePassword(

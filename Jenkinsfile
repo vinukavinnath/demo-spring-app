@@ -40,7 +40,7 @@ pipeline {
 
                             sh """
                                 echo "Scanning Image for Vulnerabilities..."
-                                trivy image --exit-code 1 --severity HIGH,CRITICAL --format table --output trivy-report.txt ${imageNameWithTag}
+                                trivy image --exit-code 1 --severity HIGH,CRITICAL --cache-dir /home/vinuka/.cache/trivy --format table --output trivy-report.txt ${imageNameWithTag}
                             """
                         }
                     }

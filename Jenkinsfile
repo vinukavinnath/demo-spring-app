@@ -34,17 +34,27 @@ pipeline {
         }
 
         stage('Vulnerability Scan') {
-                    steps {
-                        script {
-                            def imageNameWithTag = "${IMAGE_NAME}:${VERSION_TAG}"
+            steps {
+                script {
+                    def imageNameWithTag = "${IMAGE_NAME}:${VERSION_TAG}"
 
-                            sh """
-                                echo "Scanning Image for Vulnerabilities..."
-                                trivy image --exit-code 1 --severity HIGH,CRITICAL --cache-dir /home/vinuka/.cache/trivy --format table --output trivy-report.txt ${imageNameWithTag}
-                            """
-                        }
-                    }
+                    sh """
+                        echo "Scanning Image for Vulnerabilities..."
+                        TRIVY_TIMEOUT=300 trivy image --exit-code 1 --severity HIGH,CRITICAL \
+                        --cache-dir ${WORKSPACE}/.trivycache \
+                        --format table --output trivy-report.txt ${imageNameWithTag} || true
+
+                        cat trivy-report.txt
+
+                        if grep -q "CRITICAL\\|HIGH" trivy-report.txt; then
+                            echo "Vulnerabilities found! Failing the build."
+                            exit 1
+                        fi
+                    """
                 }
+            }
+        }
+
 
 
         stage('Push Docker Image') {

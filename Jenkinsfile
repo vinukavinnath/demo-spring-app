@@ -39,8 +39,8 @@ pipeline {
                             def imageNameWithTag = "${IMAGE_NAME}:${VERSION_TAG}"
 
                             sh """
-                                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest \
-                                image --exit-code 1 --severity HIGH,CRITICAL ${imageNameWithTag}
+                                echo "Scanning Image for Vulnerabilities..."
+                                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /home/vinuka/.cache/trivy/:/root/.cache/ aquasec/trivy:latest image --exit-code 1 --severity HIGH,CRITICAL ${imageNameWithTag}
                             """
                         }
                     }

@@ -40,15 +40,17 @@ pipeline {
 
                     sh """
                         echo "Scanning Image for Vulnerabilities..."
-                        TRIVY_TIMEOUT=300 trivy image --exit-code 1 --severity HIGH,CRITICAL \
-                        --cache-dir ${WORKSPACE}/.trivycache \
-                        --format table --output trivy-report.txt ${imageNameWithTag} || true
+                        trivy --timeout 1h --severity HIGH,CRITICAL --format table --output trivy-report.txt --scanners vuln image ${imageNameWithTag} || true
 
+                        echo "---- Trivy Scan Report ----"
                         cat trivy-report.txt
 
-                        if grep -q "CRITICAL\\|HIGH" trivy-report.txt; then
-                            echo "Vulnerabilities found! Failing the build."
+                        # Check for HIGH or CRITICAL vulnerabilities in the report
+                        if grep -qE 'CRITICAL|HIGH' trivy-report.txt; then
+                            echo "Vulnerabilities of HIGH or CRITICAL severity were found!"
                             exit 1
+                        else
+                            echo "Everything OK! Proceeding..."
                         fi
                     """
                 }

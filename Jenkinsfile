@@ -40,7 +40,7 @@ pipeline {
 
                             sh """
                                 echo "Scanning Image for Vulnerabilities..."
-                                docker run --rm -v /var/run/docker.sock:/var/run/docker.sock -v /home/vinuka/.cache/trivy/:/root/.cache/ aquasec/trivy:latest image --exit-code 1 --severity HIGH,CRITICAL ${imageNameWithTag}
+                                trivy image --exit-code 1 --severity HIGH,CRITICAL --format table --output trivy-report.txt ${imageNameWithTag}
                             """
                         }
                     }

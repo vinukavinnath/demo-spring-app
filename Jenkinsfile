@@ -86,7 +86,7 @@ pipeline {
         stage('Update Manifest Repo'){
             steps{
                 withCredentials([file(credentialsId:'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]){
-                    sh """
+                    sh '''
                         git config --global user.email "jenkins@vinukavinnath.com"
                         git config --global user.name "Jenkins CI"
 
@@ -99,7 +99,7 @@ pipeline {
                         git add k8/deployment.yaml
                         git commit -m "Update image tag to ${VERSION_TAG}"
                         git push origin ${MANIFEST_BRANCH}
-                    """
+                    '''
 
                 }
             }

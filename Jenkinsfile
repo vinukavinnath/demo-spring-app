@@ -85,7 +85,7 @@ pipeline {
 
         stage('Update Manifest Repo'){
             steps{
-                withCredentials([file(credentialsId:'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]){
+                withCredentials([usernamePassword(credentialsId:'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]){
                     sh '''
                         git config --global user.email "jenkins@vinukavinnath.com"
                         git config --global user.name "Jenkins CI"

@@ -83,28 +83,33 @@ pipeline {
             }
         }
 
-        stage('Update Manifest Repo'){
-            steps{
-                withCredentials([usernamePassword(credentialsId:'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]){
-                    sh '''
-                        git config --global user.email "jenkins@vinukavinnath.com"
-                        git config --global user.name "Jenkins CI"
+        stage('Update Manifest Repo') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
+                    script {
+                        def manifestRepoStripped = env.MANIFEST_REPO.replace('https://', '')  // This is Groovy code, outside the shell
+                        sh """
+                            echo "Setting up Git identity..."
+                            git config --global user.email "jenkins@vinukavinnath.com"
+                            git config --global user.name "Jenkins CI"
 
-                        rm -rf manifest-repo
-                        git clone https://${GIT_USER}:${GIT_TOKEN}@${MANIFEST_REPO.replace('https://', '')} -b ${MANIFEST_BRANCH} manifest-repo
+                            echo "Cloning manifest repository..."
+                            rm -rf manifest-repo
+                            git clone https://${GIT_USER}:${GIT_TOKEN}@${manifestRepoStripped} -b ${MANIFEST_BRANCH} manifest-repo
 
-                        sed -i 's|image: .*$|image: ${IMAGE_NAME}:${VERSION_TAG}|' manifest-repo/k8/deployment.yaml
+                            echo "Updating image tag..."
+                            sed -i 's|image: .*\$|image: ${IMAGE_NAME}:${VERSION_TAG}|' manifest-repo/k8/deployment.yaml
 
-                        cd manifest-repo
-                        git add k8/deployment.yaml
-                        git commit -m "Update image tag to ${VERSION_TAG}"
-                        git push origin ${MANIFEST_BRANCH}
-                    '''
-
+                            cd manifest-repo
+                            git add k8/deployment.yaml
+                            git commit -m "Update image tag to ${VERSION_TAG}" || echo "No changes to commit"
+                            git push origin ${MANIFEST_BRANCH}
+                        """
+                    }
                 }
             }
         }
-    }
+
 
     post {
         success {

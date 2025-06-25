@@ -4,6 +4,8 @@ pipeline {
     environment {
         IMAGE_NAME = "vinukavinnath/hellospringboot"
         DOCKER_CREDENTIALS_ID = "dockerhub-pat"
+        MANIFEST_REPO = "https://github.com/demo-spring-app/repo-manifest.git"
+        MANIFEST_BRANCH = "main"
     }
 
     stages {
@@ -81,17 +83,22 @@ pipeline {
             }
         }
 
-        stage('Deploy on cluster'){
+        stage('Update Manifest Repo'){
             steps{
-                withCredentials([file(credentialsId:'kubeconfig-jenkins', variable:'KUBECONFIGFILE')]){
+                withCredentials([file(credentialsId:'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]){
                     sh """
-                        cp k8/deployment.yaml deployment-temp.yaml
-                        sed -i 's|IMAGE_TAG_PLACEHOLDER|${VERSION_TAG}|' deployment-temp.yaml
+                        git config --global user.email "jenkins@vinukavinnath.com"
+                        git config --global user.name "Jenkins CI"
 
-                        kubectl apply -f deployment-temp.yaml
-                        kubectl apply -f k8/service.yaml
+                        rm -rf manifest-repo
+                        git clone https://${GIT_USER}:${GIT_TOKEN}@${MANIFEST_REPO.replace('https://', '')} -b ${MANIFEST_BRANCH} manifest-repo
 
-                        rm deployment-temp.yaml
+                        sed -i 's|image: .*$|image: ${IMAGE_NAME}:${VERSION_TAG}|' manifest-repo/k8/deployment.yaml
+
+                        cd manifest-repo
+                        git add k8/deployment.yaml
+                        git commit -m "Update image tag to ${VERSION_TAG}"
+                        git push origin ${MANIFEST_BRANCH}
                     """
 
                 }

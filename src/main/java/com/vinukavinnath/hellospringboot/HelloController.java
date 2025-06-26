@@ -8,6 +8,6 @@ public class HelloController {
 
     @GetMapping("/")
     public String sayHello() {
-        return "After integrating GitOps Test 1!";
+        return "After integrating GitOps Test 2!";
     }
 }

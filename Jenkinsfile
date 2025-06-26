@@ -89,10 +89,6 @@ pipeline {
                     script {
                         def manifestRepoStripped = env.MANIFEST_REPO.replace('https://', '')  // This is Groovy code, outside the shell
                         sh """
-                            echo "Setting up Git identity..."
-                            git config --global user.email "jenkins@vinukavinnath.com"
-                            git config --global user.name "Jenkins CI"
-
                             echo "Cloning manifest repository..."
                             rm -rf manifest-repo
                             git clone https://${GIT_USER}:${GIT_TOKEN}@${manifestRepoStripped} -b ${MANIFEST_BRANCH} manifest-repo

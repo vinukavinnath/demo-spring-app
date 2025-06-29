@@ -4,7 +4,8 @@ pipeline {
     environment {
         IMAGE_NAME = "vinukavinnath/hellospringboot"
         DOCKER_CREDENTIALS_ID = "dockerhub-pat"
-        MANIFEST_REPO = "https://github.com/demo-spring-app/repo-manifest.git"
+        GIT_CREDENTIALS_ID = "github-pat"
+        MANIFEST_REPO = "https://github.com/vinukavinnath/demo-spring-app-manifest.git"
         MANIFEST_BRANCH = "main"
     }
 
@@ -84,7 +85,25 @@ pipeline {
         }
 
         stage('Update Manifest Repo') {
+            steps{
+                withCredentials([usernamePassword(
+                    credentialsId: "${GIT_CREDENTIALS_ID}",
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN')])
+                        {
+                            sh '''
+                            rm -rf helm-repo
+                            git clone -b ${MANIFEST_BRANCH} https://${GIT_USER}:${GIT_TOKEN}@${MANIFEST_REPO#https://} helm-repo
 
+                            cd helm-repo
+                            sed -i "s|tag:.*|tag: ${VERSION_TAG}|" values.yaml
+
+                            git add .
+                            git commit -m "Update image tag to ${VERSION_TAG}"
+                            git push origin ${MANIFEST_BRANCH}
+                            '''
+                        }
+            }
         }
     }
 

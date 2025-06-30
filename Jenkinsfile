@@ -101,6 +101,7 @@ pipeline {
                             git add .
                             git commit -m "Update image tag to ${VERSION_TAG}"
                             git push origin ${MANIFEST_BRANCH}
+                            docker rmi ${IMAGE_NAME}:${VERSION_TAG}
                             '''
                         }
             }

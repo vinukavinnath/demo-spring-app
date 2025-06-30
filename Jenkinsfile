@@ -4,7 +4,8 @@ pipeline {
     environment {
         IMAGE_NAME = "vinukavinnath/hellospringboot"
         DOCKER_CREDENTIALS_ID = "dockerhub-pat"
-        MANIFEST_REPO = "https://github.com/demo-spring-app/repo-manifest.git"
+        GIT_CREDENTIALS_ID = "github-pat"
+        MANIFEST_REPO = "https://github.com/vinukavinnath/demo-spring-app-manifest.git"
         MANIFEST_BRANCH = "main"
     }
 
@@ -84,25 +85,24 @@ pipeline {
         }
 
         stage('Update Manifest Repo') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'github-pat', usernameVariable: 'GIT_USER', passwordVariable: 'GIT_TOKEN')]) {
-                    script {
-                        def manifestRepoStripped = env.MANIFEST_REPO.replace('https://', '')  // This is Groovy code, outside the shell
-                        sh """
-                            echo "Cloning manifest repository..."
-                            rm -rf manifest-repo
-                            git clone https://${GIT_USER}:${GIT_TOKEN}@${manifestRepoStripped} -b ${MANIFEST_BRANCH} manifest-repo
+            steps{
+                withCredentials([usernamePassword(
+                    credentialsId: "${GIT_CREDENTIALS_ID}",
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN')])
+                        {
+                            sh '''
+                            rm -rf helm-repo
+                            git clone -b ${MANIFEST_BRANCH} https://${GIT_USER}:${GIT_TOKEN}@${MANIFEST_REPO#https://} helm-repo
 
-                            echo "Updating image tag..."
-                            sed -i 's|image: .*\$|image: ${IMAGE_NAME}:${VERSION_TAG}|' manifest-repo/k8/deployment.yaml
+                            cd helm-repo
+                            sed -i "s|tag:.*|tag: ${VERSION_TAG}|" values.yaml
 
-                            cd manifest-repo
-                            git add k8/deployment.yaml
-                            git commit -m "Update image tag to ${VERSION_TAG}" || echo "No changes to commit"
+                            git add .
+                            git commit -m "Update image tag to ${VERSION_TAG}"
                             git push origin ${MANIFEST_BRANCH}
-                        """
-                    }
-                }
+                            '''
+                        }
             }
         }
     }

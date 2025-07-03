@@ -23,6 +23,12 @@ pipeline {
             }
         }
 
+        stage('SonarQube Scan') {
+             steps {
+                sh 'sonar-scanner'
+             }
+        }
+
         stage('Build Docker Image') {
             steps {
                 script {
@@ -43,7 +49,7 @@ pipeline {
 
                     sh """
                         echo "Scanning Image for Vulnerabilities..."
-                        trivy --timeout 1h --severity HIGH,CRITICAL --format table --output trivy-report.txt --scanners vuln image ${imageNameWithTag} || true
+                        trivy --timeout 1h --skip-update --severity HIGH,CRITICAL --format table --output trivy-report.txt --scanners vuln image ${imageNameWithTag} || true
 
                         echo "---- Trivy Scan Report ----"
                         cat trivy-report.txt

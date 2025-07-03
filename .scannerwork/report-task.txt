@@ -2,5 +2,5 @@ projectKey=hellospringboot
 serverUrl=http://localhost:9000
 serverVersion=25.6.0.109173
 dashboardUrl=http://localhost:9000/dashboard?id=hellospringboot
-ceTaskId=7f9f74f8-a394-4a78-91db-a3fe4c964e24
-ceTaskUrl=http://localhost:9000/api/ce/task?id=7f9f74f8-a394-4a78-91db-a3fe4c964e24
+ceTaskId=0886e6a5-2eb9-4e61-9e4e-2a95bb6f3dba
+ceTaskUrl=http://localhost:9000/api/ce/task?id=0886e6a5-2eb9-4e61-9e4e-2a95bb6f3dba

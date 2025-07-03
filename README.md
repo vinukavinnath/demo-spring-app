@@ -1,7 +1,7 @@
 # Hello World SpringBoot Application
 
 This application is a demo app developed with Springboot, built for learning and testing CI/CD workflows.
-It
+It 
 - Exposes a simple REST endpoint
 - Outputs a sample string when accessed via `http://localhost:9090`
 
@@ -14,8 +14,8 @@ This project uses two separate repositories.
 - gitops: Seperates the CD workflow to and ArgoCD application. Refer the `./app.yaml` for app configuration.
 
 ### Repository Structure (Branch: gitops)
-HelloSpringBoot/      <br>
-├── `app.yaml`  : Contains the Argocd application configuration     <br>
+HelloSpringBoot/      <br> 
+├── `app.yaml`  : Contains the Argocd application configuration     <br> 
 ├── `Dockerfile`   : Defines the layers of the Image   <br>
 ├── `Jenkinsfile`  : Defines the CI workflow  <br>
 ├── `pom.xml`         <br>
@@ -37,7 +37,8 @@ HelloSpringBoot/      <br>
 - Clones the manifest repository to Jenkins server
 - Replaces the placeholder for the docker image tag in `values.yaml` which will ultimately updates the source helm chart
 - Commits and pushes the changes to manifest repo
-  Then ArgoCD detects the difference between source and destination and It will sync and rolls out the deployment
+Then ArgoCD detects the difference between source and destination and It will sync and rolls out the deployment
+
 
 ### Thanks!
 ##### Authored by [Vinuka Vinnath](https://www.linkedin.com/in/vinukavinnath/)

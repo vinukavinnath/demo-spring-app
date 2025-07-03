@@ -4,6 +4,9 @@ pipeline {
     environment {
         IMAGE_NAME = "vinukavinnath/hellospringboot"
         DOCKER_CREDENTIALS_ID = "dockerhub-pat"
+        GIT_CREDENTIALS_ID = "github-pat"
+        MANIFEST_REPO = "https://github.com/vinukavinnath/demo-spring-app-manifest.git"
+        MANIFEST_BRANCH = "main"
     }
 
     stages {
@@ -81,23 +84,29 @@ pipeline {
             }
         }
 
-        stage('Deploy on cluster'){
+        stage('Update Manifest Repo') {
             steps{
-                withCredentials([file(credentialsId:'kubeconfig-jenkins', variable:'KUBECONFIGFILE')]){
-                    sh """
-                        cp k8/deployment.yaml deployment-temp.yaml
-                        sed -i 's|IMAGE_TAG_PLACEHOLDER|${VERSION_TAG}|' deployment-temp.yaml
+                withCredentials([usernamePassword(
+                    credentialsId: "${GIT_CREDENTIALS_ID}",
+                    usernameVariable: 'GIT_USER',
+                    passwordVariable: 'GIT_TOKEN')])
+                        {
+                            sh '''
+                            rm -rf helm-repo
+                            git clone -b ${MANIFEST_BRANCH} https://${GIT_USER}:${GIT_TOKEN}@${MANIFEST_REPO#https://} helm-repo
 
-                        kubectl apply -f deployment-temp.yaml
-                        kubectl apply -f k8/service.yaml
+                            cd helm-repo
+                            sed -i "s|tag:.*|tag: ${VERSION_TAG}|" values.yaml
 
-                        rm deployment-temp.yaml
-                    """
-
-                }
+                            git add .
+                            git commit -m "Update image tag to ${VERSION_TAG}"
+                            git push origin ${MANIFEST_BRANCH}
+                            '''
+                        }
             }
         }
     }
+
 
     post {
         success {

@@ -39,6 +39,7 @@ HelloSpringBoot/      <br>
 - Commits and pushes the changes to manifest repo
 Then ArgoCD detects the difference between source and destination and It will sync and rolls out the deployment
 
+
 ### Thanks!
 ##### Authored by [Vinuka Vinnath](https://www.linkedin.com/in/vinukavinnath/)
 

@@ -8,6 +8,6 @@ public class HelloController {
 
     @GetMapping("/")
     public String sayHello() {
-        return "With SonarQube!";
+        return "With SonarQube! errors solved";
     }
 }

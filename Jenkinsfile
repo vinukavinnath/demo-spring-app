@@ -7,6 +7,7 @@ pipeline {
         GIT_CREDENTIALS_ID = "github-pat"
         MANIFEST_REPO = "https://github.com/vinukavinnath/demo-spring-app-manifest.git"
         MANIFEST_BRANCH = "main"
+        SCANNER_HOME = tool 'SonarQube Scanner'
     }
 
     stages {
@@ -24,11 +25,11 @@ pipeline {
         }
 
         stage('SonarQube Scan') {
-             steps {
-                    withSonarQubeEnv('SonarQube') {
-                        sh 'sonar-scanner'
-                    }
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    sh "${SCANNER_HOME}/bin/sonar-scanner"
                 }
+            }
         }
 
         stage('Build Docker Image') {
